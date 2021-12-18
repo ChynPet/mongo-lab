@@ -1,0 +1,9 @@
+net:
+  port: 27018
+  bindIp: 'localhost,10.1.0.26'
+
+replication:
+  replSetName: mongo-shard-set-3
+
+sharding:
+  clusterRole: shardsvr

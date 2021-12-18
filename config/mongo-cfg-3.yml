@@ -1,0 +1,9 @@
+net:
+  port: 27019
+  bindIp: 'localhost,10.1.0.8'
+
+replication:
+  replSetName: mongo-repl-set
+
+sharding:
+  clusterRole: configsvr

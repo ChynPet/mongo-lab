@@ -1,0 +1,287 @@
+version: "3.9"
+
+networks:
+    mongo:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.1.0.0/24
+
+services:
+
+    mongo-cfg-1:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.2
+        volumes:
+            - "./config/mongo-cfg-1.yml:/etc/config/mongo/mongo-cfg-ser.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-cfg-ser.yml"'
+        expose:
+          - 27019
+
+    mongo-cfg-2:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.4
+        volumes:
+            - "./config/mongo-cfg-2.yml:/etc/config/mongo/mongo-cfg-ser.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-cfg-ser.yml"'
+        expose:
+          - 27019
+
+    mongo-cfg-3:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.8
+        volumes:
+            - "./config/mongo-cfg-3.yml:/etc/config/mongo/mongo-cfg-ser.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-cfg-ser.yml"'
+        expose:
+          - 27019
+
+
+
+    mongo-shard-1:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.16
+        volumes:
+            - "./config/mongo-shard-1/mongo-shard-1.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+    
+    mongo-shard-1-repl-1:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.17
+        volumes:
+            - "./config/mongo-shard-1/mongo-shard-repl-1.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+   
+    mongo-shard-1-repl-2:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.18
+        volumes:
+            - "./config/mongo-shard-1/mongo-shard-repl-2.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+
+
+
+    mongo-shard-2:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.20
+        volumes:
+            - "./config/mongo-shard-2/mongo-shard-2.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+
+    mongo-shard-2-repl-1:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.21
+        volumes:
+            - "./config/mongo-shard-2/mongo-shard-repl-1.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+
+    mongo-shard-2-repl-2:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.22
+        volumes:
+            - "./config/mongo-shard-2/mongo-shard-repl-2.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+
+
+
+    mongo-shard-3:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.24
+        volumes:
+            - "./config/mongo-shard-3/mongo-shard-3.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+    
+    mongo-shard-3-repl-1:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.25
+        volumes:
+            - "./config/mongo-shard-3/mongo-shard-repl-1.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+            - mongo-shard-3:mongo-shard-3
+
+    mongo-shard-3-repl-2:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.26
+        volumes:
+            - "./config/mongo-shard-3/mongo-shard-repl-2.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+            - mongo-shard-3:mongo-shard-3
+
+
+
+    mongo-shard-4:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.28
+        volumes:
+            - "./config/mongo-shard-4/mongo-shard-4.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+            - mongo-shard-3:mongo-shard-3
+
+    mongo-shard-4-repl-1:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.29
+        volumes:
+            - "./config/mongo-shard-4/mongo-shard-repl-1.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+            - mongo-shard-3:mongo-shard-3
+            - mongo-shard-4:mongo-shard-4
+
+
+    mongo-shard-4-repl-2:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.30
+        volumes:
+            - "./config/mongo-shard-4/mongo-shard-repl-2.yml:/etc/config/mongo/mongo-shard.yml"
+        command: 'bin/bash -c "mongod --config /etc/config/mongo/mongo-shard.yml"'
+        expose:
+            - 27018
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-2:mongo-shard-2
+            - mongo-shard-3:mongo-shard-3
+            - mongo-shard-4:mongo-shard-4
+
+
+
+    mongo-route:
+        image: mongo:latest
+        networks:
+            mongo:
+                ipv4_address: 10.1.0.32
+        command: '/bin/bash -c "mongos --configdb mongo-repl-set/10.1.0.2:27019,10.1.0.4:27019,10.1.0.8:27019 --port 27020 --bind_ip_all"'
+        ports:
+            - 27020:27017
+        links:
+            - mongo-cfg-1:mongo-cfg-1
+            - mongo-cfg-2:mongo-cfg-2
+            - mongo-cfg-3:mongo-cfg-3
+            - mongo-shard-1:mongo-shard-1
+            - mongo-shard-1-repl-1:mongo-shard-1-repl-1
+            - mongo-shard-1-repl-2:mongo-shard-1-repl-2
+            - mongo-shard-2:mongo-shard-2
+            - mongo-shard-2-repl-1:mongo-shard-2-repl-1
+            - mongo-shard-2-repl-2:mongo-shard-2-repl-2
+            - mongo-shard-3:mongo-shard-3
+            - mongo-shard-3-repl-1:mongo-shard-3-repl-1
+            - mongo-shard-3-repl-2:mongo-shard-3-repl-2
+            - mongo-shard-4:mongo-shard-4
+            - mongo-shard-4-repl-1:mongo-shard-4-repl-1
+            - mongo-shard-4-repl-2:mongo-shard-4-repl-2
